@@ -49,6 +49,14 @@ Options:
     -l --log <communication_log_file>       Write hid communication (input reports and output reports) to a file.
 """
 
+async def hold_a_button(controller_state: ControllerState):
+
+    if controller_state.get_controller() != Controller.PRO_CONTROLLER:
+        raise ValueError('This script only works with the Pro Controller!')
+
+    await controller_state.connect()
+    await button_push(controller_state, 'a', 5)
+
 
 async def test_controller_buttons(controller_state: ControllerState):
     """
@@ -196,8 +204,12 @@ async def _main(args):
             """
             await test_controller_buttons(controller_state)
 
+        async def _run_hold_a_button():
+            await hold_a_button(controller_state)
+
         # add the script from above
         cli.add_command('test_buttons', _run_test_controller_buttons)
+        cli.add_command('hold_a', _run_hold_a_button)
 
         # Mash a button command
         async def call_mash_button(*args):
