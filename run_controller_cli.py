@@ -49,14 +49,38 @@ Options:
     -l --log <communication_log_file>       Write hid communication (input reports and output reports) to a file.
 """
 
+async def wait(controller_state: ControllerState):
+
+    if controller_state.get_controller() != Controller.PRO_CONTROLLER:
+        raise ValueError('This script only works with the Pro Controller!')
+
+    await controller_state.connect()
+    # TODO assuming controls will go through (no junk), this is fine
+    await asyncio.sleep(.2)
+
+async def wait_long(controller_state: ControllerState):
+
+    if controller_state.get_controller() != Controller.PRO_CONTROLLER:
+        raise ValueError('This script only works with the Pro Controller!')
+
+    await controller_state.connect()
+    await asyncio.sleep(1)
+
 async def hold_a_button(controller_state: ControllerState):
 
     if controller_state.get_controller() != Controller.PRO_CONTROLLER:
         raise ValueError('This script only works with the Pro Controller!')
 
     await controller_state.connect()
-    await button_push(controller_state, 'a', 5)
+    await button_push(controller_state, 'a', sec=5)
 
+async def hold_b_button(controller_state: ControllerState):
+
+    if controller_state.get_controller() != Controller.PRO_CONTROLLER:
+        raise ValueError('This script only works with the Pro Controller!')
+
+    await controller_state.connect()
+    await button_push(controller_state, 'b', sec=5)
 
 async def test_controller_buttons(controller_state: ControllerState):
     """
@@ -204,12 +228,24 @@ async def _main(args):
             """
             await test_controller_buttons(controller_state)
 
+        async def _run_wait():
+            await wait(controller_state)
+
+        async def _run_wait_long():
+            await wait_long(controller_state)
+
         async def _run_hold_a_button():
             await hold_a_button(controller_state)
 
+        async def _run_hold_b_button():
+            await hold_b_button(controller_state)
+
         # add the script from above
         cli.add_command('test_buttons', _run_test_controller_buttons)
+        cli.add_command('wait', _run_wait)
+        cli.add_command('wait_long', _run_wait_long)
         cli.add_command('hold_a', _run_hold_a_button)
+        cli.add_command('hold_b', _run_hold_b_button)
 
         # Mash a button command
         async def call_mash_button(*args):
