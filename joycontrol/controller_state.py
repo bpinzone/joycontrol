@@ -187,7 +187,7 @@ class ButtonState:
         self._byte_1 = self._byte_2 = self._byte_3 = 0
 
 
-async def button_push(controller_state, *buttons, sec=0.07):
+async def button_push(controller_state, *buttons, sec=0.09):
     if not buttons:
         raise ValueError('No Buttons were given.')
 
